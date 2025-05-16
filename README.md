@@ -20,10 +20,8 @@ Streaming platforms expose listeners to catalogues exceeding 100 million tracks,
 7. [Limitations](#limitations)  
 8. [Next Steps](#next-steps)  
 9. [Quick Start](#quick-start)  
-10. [Repository Structure](#repository-structure)  
-11. [Team Contributions](#team-contributions)  
-12. [References](#references)  
-13. [License](#license)
+10. [Team Contributions](#team-contributions)  
+11. [References](#references)  
 
 ---
 
@@ -132,23 +130,6 @@ The notebook covers data loading, clustering, recommendation, and evaluation in 
 
 ---
 
-## Repository Structure
-
-```
-.
-├── data/                      # (optional) local cache of CSVs
-├── notebooks/
-│   └── Spotify_Clustering_Recommendation.ipynb
-├── src/
-│   ├── preprocessing.py
-│   ├── clustering.py
-│   └── recommend.py
-├── requirements.txt
-└── README.md
-```
-
----
-
 ## Team Contributions
 
 | Member | Responsibilities |
@@ -166,8 +147,4 @@ The notebook covers data loading, clustering, recommendation, and evaluation in 
 * Pichl, M., Zangerle, E., & Specht, G. (2018). *Context‑Aware Playlist Generation Using Pre‑Computed Audio Features*.  
 
 ---
-
-## License
-
-This project is released under the **MIT License**—see the `LICENSE` file for details.
 
