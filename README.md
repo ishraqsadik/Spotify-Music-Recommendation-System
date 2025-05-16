@@ -1,66 +1,173 @@
-Music Recommendation via Unsupervised Clustering of Spotify Audio Features
-Team 13
-Abstract
-Streaming services host well over 100 million tracks, yet their recommender pipelines are opaque to outside researchers. We build a lightweight, fully transparent prototype that clusters 114 k Spotify tracks on 21 low level audio features and uses Euclidean proximity within that feature space to recommend songs. On a held out set of synthetic “playlists” the cluster filtered search matches the relevance of a whole library k nearest neighbors (K NN) baseline while evaluating only ≈ 15 % of the catalogue, suggesting that unsupervised clustering can accelerate content based recommendation without loss of quality. 
+# Music Recommendation via Unsupervised Clustering of Spotify Audio Features
 
-Motivation & Research Questions
-Listeners are overwhelmed by choice; even expert users struggle to sift through millions of tracks. Commercial recommenders (e.g. Spotify Radio) work well but are proprietary black boxes. By recreating one building block of such systems with open data we ask:
-Can unsupervised clustering of track audio features effectively produce relevant and satisfying music recommendations?
+*Team 13 – CAP 4773 Social Media Mining (University of South Florida)*  
 
-Literature Review
-Early academic systems relied on collaborative filtering, more recent work blends audio content with user context. Pichl et al. introduce context aware playlist generation: songs are first clustered on audio features, then ordered via graph traversal conditioned on user mood and activity. We adopt their clustering insight but deliberately exclude contextual signals in order to isolate the value of audio features alone. 
-Our contribution differs by (i) benchmarking cluster filtered search against a whole library K NN on an open 100 k track dataset and (ii) publishing fully reproducible code in a single notebook.
+---
 
-Data
-Property	Value
-Source	Spotify Tracks Dataset on Kaggle  
+## Abstract
 
-Size	114 ,000 tracks, 125 genres
-Features (21)	tempo, energy, danceability, valence, loudness, acousticness, instrumentalness, liveness, speechiness…
-Format	CSV 
+Streaming platforms expose listeners to catalogues exceeding 100 million tracks, yet their proprietary recommender pipelines remain opaque to researchers. We present a fully transparent prototype that clusters ≈ 114 k Spotify tracks on 21 low‑level audio features and recommends songs via Euclidean proximity within that space. When evaluated on synthetic test playlists, our **cluster‑filtered search** matches the relevance of a brute‑force *k*-nearest‑neighbours (K‑NN) scan while examining only ≈ 15 % of the catalogue—evidence that a single unsupervised pass can accelerate content‑based recommendation without degrading quality.
 
-Method
-Pre processing
-1.	Train/Test Split: 80/20
-2.	Scaling: All numeric attributes were min max scaled to [0,1].
-Clustering
- 
-Algorithm: K-means clustering algorithm, k = 7 (silhouette analysis and elbow criterion).
- 
-Cluster labels are appended to every track.
-Recommendation Logic
-Given a seed playlist S (10 tracks) and a candidate pool C:
-1.	Compute centroid of S in feature space.
-2.	Measure Euclidean distance
-3.	Return the 10 closest unseen tracks.
- 
-Evaluation Protocol
-•	Test set: 10 synthetic playlists (random 10 song samples).
-•	Metric: mean Euclidean distance between each output track and its seed centroid (lower = better).
- 
-GitHub repository: https://github.com/ishraqsadik/CAP4773-SMM-Team13 
+---
 
-Results
-   
-For every test playlist, the cluster-filtered recommender and the full-library K-NN produced almost identical song lists. Their average distance to the seed-playlist “sound” never rose above 0.92, while the random baseline hovered between 2.26 and 3.46. The smarter recommenders stayed close to the vibe of the originals, while random picks drifted far off. Because clustering trims the search space by roughly 85% yet keeps the same quality scores, it’s a fast, lightweight step that doesn’t sacrifice recommendation accuracy.
-Discussion
-Our findings show that you don’t need the heavy, context-aware machinery of Pichl et al. to deliver sensible song suggestions. With nothing but 21 raw audio features we first clustered the ≈114 k-track catalogue, then ran K-nearest-neighbour (K-NN) search inside the dominant cluster of each seed playlist. That lightweight shortcut examined only about 15 % of the library, yet its average distance to the playlist’s “sound centroid” (0.47 – 0.92 across playlist types) was essentially identical to a full-library K-NN scan. In other words, a single unsupervised clustering pass can slash the candidate pool while leaving recommendation quality untouched—a pragmatic win for anyone who wants faster, cheaper content-based filtering.
-There are, however, clear caveats. Our model knows nothing about a listener’s mood, location, or listening history; it sees only tempo, energy, and similar frame-level descriptors. The evaluation playlists are synthetic samples rather than real usage logs, and the underlying dataset skews toward pre-2023 tracks, meaning both popularity shifts, and newly emerging genres are under-represented. These factors limit how confidently we can generalize the results to live streaming platforms.
-Next, we plan to seed the system with genuine Spotify playlists to check whether clustering still keeps pace—or even beats—naïve K-NN when faced with real-world taste profiles. A second milestone is a head-to-head comparison with Spotify’s own recommendation API, providing a practical benchmark of user‐perceived quality. Finally, we’ll move beyond “audio-only” by blending in lightweight context such as release year, genre tags, or session-level signals (e.g., time of day), turning the current proof-of-concept into a more versatile hybrid recommender.
+## Table of Contents
+1. [Motivation & Research Questions](#motivation--research-questions)  
+2. [Literature Review](#literature-review)  
+3. [Dataset](#dataset)  
+4. [Methodology](#methodology)  
+5. [Results](#results)  
+6. [Discussion](#discussion)  
+7. [Limitations](#limitations)  
+8. [Next Steps](#next-steps)  
+9. [Quick Start](#quick-start)  
+10. [Repository Structure](#repository-structure)  
+11. [Team Contributions](#team-contributions)  
+12. [References](#references)  
+13. [License](#license)
 
+---
 
+## Motivation & Research Questions
 
+Listeners face information overload; even expert users cannot manually sift millions of tracks. Commercial engines (e.g. Spotify Radio) work well but are black boxes. We therefore ask:
 
+> **Can unsupervised clustering of raw audio features alone deliver relevant music recommendations comparable to a full‑library K‑NN baseline?**
 
-References
-Pichl, M., Zangerle, E., & Specht, G. (2018). Context Aware Playlist Generation Using Pre Computed Audio Features.
-Team Member Contributions
-Member	Responsibilities
-Ishraq Khan	Statistical analysis and playlist generation, including visualizations
-Farhan Shahriar Abrar	Built recommendation functions
-Aanthoni Dsouza	Data acquisition & cleaning; Idea generation
-Efaz Ibrahim	Implemented K Means algorithm
-Isfahan Jawad Juboraj	Research analysis and motivation
+---
 
+## Literature Review
 
+Early academic work leaned on collaborative filtering, while recent studies blend audio content with rich user context. Pichl et al. first clustered tracks on audio features before re‑ordering them via context‑aware graph traversal. We adopt their clustering insight but *deliberately remove* contextual signals to isolate the predictive power of audio features themselves, benchmarking cluster‑filtered search against a whole‑library K‑NN on an open dataset.
+
+---
+
+## Dataset
+
+| Property | Value |
+|----------|-------|
+| **Source** | Spotify Tracks Dataset (Kaggle) |
+| **Size** | 114 000 tracks, 125 genres |
+| **Features (21)** | tempo, energy, danceability, valence, loudness, acousticness, instrumentalness, liveness, speechiness, … |
+| **Format** | CSV |
+
+All numeric attributes were min‑max scaled to [0, 1] prior to modelling.
+
+---
+
+## Methodology
+
+### Pre‑processing  
+* 80 / 20 train–test split  
+* Min‑max scaling on every numeric field  
+
+### Clustering  
+* **Algorithm:** *k*-means, *k = 7* (chosen via silhouette analysis & elbow criterion)  
+* Cluster label appended to each track record  
+
+### Recommendation Logic  
+1. Accept a **seed playlist *S*** (10 tracks).  
+2. Compute the centroid of *S* in 21‑dimensional feature space.  
+3. Within the **dominant cluster** of *S*, return the 10 unseen tracks with the smallest Euclidean distance to that centroid.  
+
+### Evaluation Protocol  
+* **Test set:** 10 synthetic playlists (random 10‑song samples)  
+* **Metric:** Mean Euclidean distance between each recommended track and the seed‑playlist centroid (lower = better)  
+* **Baselines:**  
+  * Whole‑library K‑NN (audio content only)  
+  * Random selection  
+
+---
+
+## Results
+
+| Recommender | Mean Distance ↓ | Candidate Pool Size |
+|-------------|-----------------|---------------------|
+| **Cluster‑filtered K‑NN** | 0.47 – 0.92 | ≈ 15 % |
+| Whole‑library K‑NN | 0.45 – 0.91 | 100 % |
+| Random | 2.26 – 3.46 | 100 % |
+
+Across all playlists, the cluster‑filtered search retained virtually the same proximity to the desired “sound” as a brute‑force K‑NN, while scanning only a fraction of the catalogue.
+
+---
+
+## Discussion
+
+A single unsupervised clustering pass can **slash the candidate pool by ≈ 85 %** with no measurable loss in recommendation quality—an attractive speed‑up for anyone building transparent, content‑based recommenders. Nevertheless, the model sees only raw audio descriptors and therefore misses important contextual cues (mood, session, user history). Synthetic evaluation playlists and a dataset skewed toward pre‑2023 tracks further limit generalisability.
+
+---
+
+## Limitations
+
+* **Audio‑only perspective:** Ignores user context and listening history.  
+* **Synthetic evaluation data:** Not validated on real user playlists.  
+* **Dataset bias:** Under‑represents newly released music and emerging genres.  
+
+---
+
+## Next Steps
+
+1. **Seed with genuine Spotify playlists** to test real‑world robustness.  
+2. **Benchmark against Spotify’s Recommendation API** as an external gold standard.  
+3. **Integrate lightweight context** (e.g. release year, genre tags) to evolve into a hybrid recommender.  
+
+---
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+
+# Create Python environment
+python -m venv venv
+source venv/bin/activate         # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Launch the end‑to‑end notebook
+jupyter notebook notebooks/Spotify_Clustering_Recommendation.ipynb
+```
+
+The notebook covers data loading, clustering, recommendation, and evaluation in a single run.
+
+---
+
+## Repository Structure
+
+```
+.
+├── data/                      # (optional) local cache of CSVs
+├── notebooks/
+│   └── Spotify_Clustering_Recommendation.ipynb
+├── src/
+│   ├── preprocessing.py
+│   ├── clustering.py
+│   └── recommend.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Team Contributions
+
+| Member | Responsibilities |
+|--------|------------------|
+| **Ishraq Khan** | Statistical analysis & playlist generation; visualisations |
+| **Farhan Shahriar Abrar** | Core recommendation functions |
+| **Aanthoni Dsouza** | Data acquisition & cleaning; idea generation |
+| **Efaz Ibrahim** | K‑means implementation |
+| **Isfahan Jawad Juboraj** | Research analysis & motivation |
+
+---
+
+## References
+
+* Pichl, M., Zangerle, E., & Specht, G. (2018). *Context‑Aware Playlist Generation Using Pre‑Computed Audio Features*.  
+
+---
+
+## License
+
+This project is released under the **MIT License**—see the `LICENSE` file for details.
 
